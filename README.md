@@ -2,12 +2,11 @@
 
 ### Objetivo
 
-El objetivo de esta práctica consiste en comprender y saber hacer funcionar los buses, un sistema para poder comunicar periféricos tanto externos como internos al procesador. Concretamente en esta práctica utilizaremos los buses i2c, spi, i2s , usart. 
-
+El objetivo de esta práctica consiste en comprender y saber hacer funcionar los buses, un sistema para poder comunicar periféricos tanto externos como internos al procesador. Concretamente, en esta práctica utilizaremos los buses i2c, spi, i2s, usart. 
 
 ### PARTE 1 
 
-En la parte 1 de de la práctica 5, vamos a realizar una comunicació I2c con un perifé rico (LIQUIDCRYSTAL/AHT10), el cual nos mostrara la temperatura y humedad del lugar. Para ello primero tendremos que incluir ciertas librerias: 
+En la parte 1 de de la práctica 5, vamos a realizar una comunicación I2c con un perifé rico (LIQUIDCRYSTAL/AHT10), el cual nos mostrara la temperatura y humedad del lugar. Para ello primero tendremos que incluir ciertas librerias: 
 
 - "#include <AHT10.h>" esta librería es necesaria para poder utlizar correctamente el componenet  (AHT10), que nos proporcionar la temperatua y la humedad de su entorno.
 - "#include <Wire.h>" esta nos proporciona la capacidad de comunicarnos con I2C/TWI con los difeentes componentes.
