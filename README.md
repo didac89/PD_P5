@@ -8,7 +8,7 @@ El objetivo de esta práctica consiste en comprender y saber hacer funcionar los
 
 En la parte 1 de de la práctica 5, vamos a realizar una comunicación I2c con un periférico (LIQUIDCRYSTAL/AHT10), el cual nos mostrará la temperatura y humedad del lugar. Para ello primero tendremos que incluir ciertas librerías: 
 
--``#include <AHT10.h>`` esta librería es necesaria para poder utlizar correctamente el componente (AHT10), que nos proporciona la temperatua y la humedad de su entorno.
+- ``#include <AHT10.h>`` esta librería es necesaria para poder utlizar correctamente el componente (AHT10), que nos proporciona la temperatua y la humedad de su entorno.
 - ``#include <Wire.h>`` esta nos proporciona la capacidad de comunicarnos con I2C/TWI con los difrentes componentes.
 - ``#include <LiquidCrystal_I2C.h>`` esta última, nos proporciona la capacidad de escribir por la pantalla del componente (LiquidCrystal).
 
