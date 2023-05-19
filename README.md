@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-El objetivo de esta práctica consiste en comprender y saber hacer funcionar diferentes buses, un sistema para poder comunicar periféricos tanto externos como internos al procesador. Concretamente, en esta práctica utilizaremos los buses I2C, SPI, I2S y usart. 
+El objetivo de esta práctica consiste en comprender y saber hacer funcionar diferentes buses, un sistema para poder comunicar periféricos tanto externos como internos al procesador. Concretamente, en esta práctica utilizaremos los buses I2C. 
 
 ## I2C: Liquid Crystal y AHT10
 
