@@ -2,28 +2,27 @@
 
 ## Objetivo
 
-El objetivo de esta práctica consiste en comprender y saber hacer funcionar los buses, un sistema para poder comunicar periféricos tanto externos como internos al procesador. Concretamente, en esta práctica utilizaremos los buses i2c, spi, i2s, usart. 
+El objetivo de esta práctica consiste en comprender y saber hacer funcionar diferentes buses, un sistema para poder comunicar periféricos tanto externos como internos al procesador. Concretamente, en esta práctica utilizaremos los buses I2C, SPI, I2S y usart. 
 
-## PARTE 1 
+## I2C: Liquid Crystal y AHT10
 
-En la parte 1 de de la práctica 5, vamos a realizar una comunicación I2c con un periférico (LIQUIDCRYSTAL/AHT10), el cual nos mostrará la temperatura y humedad del lugar. Para ello primero tendremos que incluir ciertas librerías: 
+En esta primera parte de de la práctica, vamos a realizar una comunicación I2C con dos periféricos. Uno de ellos, Liquid Crystal (LCD), es una pantalla de cristal líquido, tal y como su nombre indica, comunmente utilizada en dispositivos electrónicos, que permite mostrar información con una interfaz visual. El segundo periférico utilizado, es el AHT10, un sensor de alta precisión y bajo consumo que mide la temperatura y humedad relativa del ambiente. Interconnectando todas las partes, mostraremos por la pantalla del LCD, los datos captados por el sensor AHT10. Para ello, tendremos que incluir ciertas librerías para poder trabajar con más facilidad con Arduino: 
 
-- ``#include <AHT10.h>`` esta librería es necesaria para poder utlizar correctamente el componente (AHT10), que nos proporciona la temperatua y la humedad de su entorno.
-- ``#include <Wire.h>`` esta nos proporciona la capacidad de comunicarnos con I2C/TWI con los difrentes componentes.
-- ``#include <LiquidCrystal_I2C.h>`` esta última, nos proporciona la capacidad de escribir por la pantalla del componente (LiquidCrystal).
+- ``#include <AHT10.h>``: necesaria para poder utlizar correctamente el componente (AHT10), que nos proporciona la temperatua y la humedad de su entorno.
+- ``#include <Wire.h>``: nos proporciona la capacidad de comunicarnos con I2C/TWI con los diferentes componentes.
+- ``#include <LiquidCrystal_I2C.h>``: nos proporciona la capacidad de escribir por la pantalla del componente (LiquidCrystal).
 
-Después de eso, tenemos que declarar la cantidad de filas y columnas que queremos configurar en nuestra pantalla de (LiquidCrystal). Para ello utilizaremos estas instrucciones.
+Después de eso, tenemos que declarar la cantidad de filas y columnas que queremos configurar en nuestra pantalla de cristal líquido. Para llevarlo a cabo, utilizaremos estas instrucciones:
 ````cpp
 #define COLUMS           20  //para la cantidad de columnas
 #define ROWS             4   //para el numero de filas
 #define LCD_SPACE_SYMBOL 0x20//separacion entra caracteres
 ````
-
-A continuación establecemos una dirección I2C específica, para que nuestro SP32 sepa dónde pedir la humedad.
+A continuación, establecemos una dirección I2C específica, para que nuestro ESP32 sepa de dónde sacar la información sobre la humedad y temperatura.
 
 ``AHT10 myAHT10(AHT10_ADDRESS_0X38);``
 
-Empecemos con nuestro ``setup()``, en el que creamos un controlador para saber si nuestro AHT10 (medidor de temperatura y humedad) se esta ejecutando correctamente. En caso de fallo imprime por pantalla ``AHT10 not connected or fail to load calibration coefficient`` y a viceversa en caso de funcionamiento "``AHT10 OK``".
+Empecemos con nuestro ``setup()``, en el que creamos un controlador para saber si nuestro sensor AHT10 se está ejecutando correctamente. En caso de fallo imprime por el serial: `AHT10 not connected or fail to load calibration coefficient`; en caso contrario: "``AHT10 OK``".
 ```cpp
   while (myAHT10.begin() != true)
   {
@@ -32,12 +31,13 @@ Empecemos con nuestro ``setup()``, en el que creamos un controlador para saber s
   }
   Serial.println(F("AHT10 OK"));
 ```
-  A demás tambiénn realizará un control de nuestro LiquidCrystal como en el caso anterior, en la mal funcionamiento pondrá ``"PCF8574 is not connected or lcd pins declaration is wrong. Only pins numbers: 4,5,6,16,11,12,13,14 are legal."``. Y en buen ``"PCF8574 is OK..."``.
+Además, también realizará un control de nuestro Liquid Crystal como en el caso anterior. En caso de mal funcionamiento, se imprimirá ``"PCF8574 is not connected or lcd pins declaration is wrong. Only pins numbers: 4,5,6,16,11,12,13,14 are legal."`` por el terminal. Si al contrario, funciona correctamente, se avisará al usuario con ``"PCF8574 is OK..."``.
 
-  Para finalizar nos queda desarrollar nuestro loop. En el se dan las instrucciones de que ipmrimir por pantalla. Con el lcd.setCursor(0, 0); le decimos a que fila y con lcd.println(F("PRACTICA 5")); que queremos que ponga.
-  Important remarcar que los datos extraidos por nuestro AHT10, son llamados por nuesro liquidcrystal con la funcion ``lcd.print(myAHT10.readTemperature/Humidity(AHT10_FORCE_READ_DATA));``. Los cuales se van actualizando cada 11 segundos.
+Para finalizar, nos queda desarrollar nuestro ``loop()``. Dentro, se dan las instrucciones de qué imprimir por la pantalla. Con ``lcd.println(F("xxxxx"))`` indicamos la información que queremos mostrar, siendo xxxxx esa información. Con la anterior línea de código, `lcd.setCursor(a, b)`, indicamos la fila en la que queremos mostrar, siendo a=0 y b enteros entre 0 y 3. 
 
-  Al juntarlo todo, obtenemos este resultado:
+Los datos extraídos por el sensor son llamados por la función `lcd.print(myAHT10.readTemperature/Humidity(AHT10_FORCE_READ_DATA))`, los cuales se van actualizando cada 11 segundos.
+
+Al juntarlo todo, obtenemos este resultado:
 
 ```cpp
 #include <Arduino.h>
@@ -99,28 +99,39 @@ void loop()
 }
 
 ```
+Y la salida por el puerto serie es el siguiente:
+```c
+AHT10 not connected or fail to load calibration coefficient
+AHT10 not connected or fail to load calibration coefficient
+AHT10 OK
+PCF8574 is not connected or lcd pins declaration is wrong. Only pins numbers: 4,5,6,16,11,12,13,14 are legal.
+PCF8574 is OK...
+```
 
 ### Diagrama de flujo
 ```mermaid
 
 flowchart TD;
-    A[Inicializa los valores y pies] -->B[Comprobación del funcionamiento del AHT10/LiquidCrystal ];    
-    B-->G[Impresiónn por pantalla ];
+    A[Inicializa los valores y pines] -->B[Comprobación del funcionamiento del AHT10/LiquidCrystal ];    
+    B-->G[Impresión por pantalla ];
 
 ```
-## PARTE 2
+### Montaje
+<image src='images/lcd.jpg' alt='lcd' width='400'>
+<image src='images/lcd1.jpg' alt='lcd' width='400'>
 
-En la parte 2 de la práctica 5, desarrollaremos una comunicación I2c con un perifèrico (MAX30102). Que nos servirá para medir las pulsaciones cardíacas del usuario. Como en la parte 1 primero habrá que incluir algunas librerías:
+## I2C: MAX30102
 
-- ``#include <Wire.h>``, también la hemos utlizado en la práctca anterior, que recordemos que nos proporciona la capacidad de comunicarnos con I2C/TWI con los difeentes componentes.
+En esta segunda parte de la práctica, desarrollaremos una comunicación I2C con el periférico MAX30102. Este, es un sensor de pulso y oximetría de frecuencia cardíaca que utiliza tecnología óptica para medir el ritmo cardíaco y la saturación de oxígeno en sangre. Para comunicar el periférico con nuestro microprocesador ESP32, utilizaremos una una interfaz I2C y necesitaremos incluir dos librerías:
 
-- ``#include "MAX30105.h"``, nos ofrece la capacida para poder utlizar correctamente el componenet (MAX30102) y así extraer las pulsaciones cardíacas.
+- ``#include <Wire.h>``
+- ``#include "MAX30105.h"``: nos ofrece la capacidad para poder utlizar correctamente el componente MAX30102
 
-Antes de empezar con el ``setup()``, es necesario crear el objeto MAX30105 con el nombre ``particleSensor``.
+Antes de empezar con el ``setup()``, es necesario crear un objeto MAX30105 que nombraremos ``particleSensor``.
 
-Hecho esto, creamos un controlador para saber si nuestro MAX30102 (medidor de pulsaciones) se esta ejecutando correctamente. En caso de fallida, entra en un bucle ``while(1)`` y se imprimirá por pantalla ``"MAX30105 was not found. Please check wiring/power."``.
+Hecho esto, creamos un controlador para saber si nuestro medidor de pulsaciones se está ejecutando correctamente. En caso de fallida, entra en un bucle con ``while(1)`` e informa por el terminal `"MAX30105 was not found. Please check wiring/power."`.
 
-A continuación, inicializamos los volores que consideremos adecuados para nuestro objeto, junto con el numero de pulsaciones que queremos hacer de media.
+A continuación, inicializamos los valores que consideremos adecuados para nuestro objeto, junto con el número de pulsaciones que queremos tomar para hacer la media.
 
 ```cpp
   //Setup to sense a nice looking saw tooth on the plotter
@@ -133,24 +144,19 @@ A continuación, inicializamos los volores que consideremos adecuados para nuest
 
   particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange); //Configure sensor with these settings
 
-  //Arduino plotter auto-scales annoyingly. To get around this, pre-populate
-  //the plotter with 500 of an average reading from the sensor
-
-  //Take an average of IR readings at power up
   const byte avgAmount = 64;
   long baseValue = 0;
 ```
 
-Por último, nos queda realizar el sumador de pulsaciones, el cual lo desarrollaremos con un bucle ``for()``. Que nos permitira hacer la media de los valores obtenidos alrededor de 64 muestras. 
+Por último, nos queda realizar el sumador de pulsaciones que nos permitirá hacer la media de los valores obtenidos alrededor de las 64 muestras decididas anteriormente. Lo desarrollaremos con un bucle ``for()``. 
 ```cpp
   for (byte x = 0 ; x < avgAmount ; x++)
   {
     baseValue += particleSensor.getIR(); //Read the IR value
   }
   baseValue /= avgAmount;
-
 ```
-Una vez obtenidos los valores, pondremos en fucionamiento otro for para realizar una escala de los valores más acurada, y así finalmente imprimir por pantalla el resultado final, con nuestro ```loop()```.
+Una vez obtenidos los valores, pondremos en fucionamiento otro bucle para realizar una escala de los valores más acurada, y así finalmente imprimir por el puerto serie el resultado final, con nuestro ```loop()```.
 
 Al juntarlo todo, obtenemos este resultado:
 
@@ -158,7 +164,7 @@ Al juntarlo todo, obtenemos este resultado:
 #include <Wire.h>
 #include "MAX30105.h"
 
-  MAX30105 particleSensor;
+MAX30105 particleSensor;
 
 void setup()
 {
@@ -203,20 +209,28 @@ void loop()
 {
   Serial.println(particleSensor.getIR()); //Send raw data to plotter
 }
+```
+Por lo tanto, la salida por el terminal sería la siguiente, teniendo en cuenta que cada línea representa una lectura de infrarrojos (IR) capturada por el sensor MAX30105.
 
 ```
-
+523
+525
+521
+518
+520
+526
+...
+```
 ### Diagrama de flujo
 ```mermaid
 
 flowchart TD;
-    A[Se configura el plotter a 115200 / Imprime por pantalla: INITIALIZING ] -->B[Inicializa el sensor];    
-    B-->G[En caso de funcionamiento ];
-    B-->H[En caso de herror, imprime por patalla: MAX30105 was not found. Please check wiring/power ];
-    G-->t[Inicializa valores del lectro de pulsaciones ];
-    t-->p[64 lecturas i calcula la media];
-    p-->w[impreime 500 veces en el ploter el valor calculado];
-    w-->s[periódicamente lee pulsaciones y las imprime por el ploter];
+    A[Inicialización serial]--> B[Se ha inicializado el sensor?];    
+    B-- si -->G[Establece los valores de los parámetros del lector de pulsaciones];
+    B-- no -->H[Error: MAX30105 was not found. Please check wiring/power];
+    G-->p[Toma 64 valores y calcula la media];
+    p-->w[Imprime 500 veces en el plotter los diversos valores calculados aproximadamente iguales a baseValue];
+    w-->s[Lee pulsaciones periódicamente y las imprime por el plotter];
 ````
 
 
